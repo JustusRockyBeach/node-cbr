@@ -1,0 +1,18 @@
+{
+  "name": "node-cbr",
+  "version": "1.0.0",
+  "description": "Case Based Reasoning System",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Justus Jonas",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "clone": "^1.0.2",
+    "lodash": "^4.0.0",
+    "log4js": "^0.6.29",
+    "uuid": "^2.0.1",
+    "webworker-threads": "^0.6.2"
+  }
+}

@@ -20,16 +20,6 @@ var Retriever = function () {
 };
 util.inherits(Retriever, EventEmitter);
 
-function defaultEvaluation(q, c) {
-    var tq = typeof q, tc = typeof c;
-    if (tq === tc) {
-        if (tq === 'string' || tq === 'number') {
-            return q === c ? 1 : 0;
-        }
-    }
-    return 0;
-}
-
 function compareSimilarity(a, b) {
     return b.similarity - a.similarity;
 }
@@ -53,20 +43,6 @@ Retriever.prototype.setModel = function(modelDefinition) {
         });
     });
 }
-
-Retriever.prototype.setValuationModel = function(model) {
-    var _this = this, attribute;
-    if (model.attributes) {
-        Object.keys(model.attributes).forEach(function(attributeName) {
-            attribute = model.attributes[attributeName];
-            _this.attributes.push({
-                name: attributeName,
-                weight: attribute.weight !== undefined ? attribute.weight : 0,
-                evaluate: typeof attribute.evaluate === 'function' ? attribute.evaluate : defaultEvaluation
-            });
-        });
-    }
-};
 
 Retriever.prototype.add = function (data) {
     var add = clone(data);
@@ -99,40 +75,6 @@ Retriever.prototype.evaluate = function(query, opt) {
     }
     if (logger.isLevelEnabled(levels.DEBUG)) {
         logger.debug('Evaluation takes ' + (new Date().getTime() - start) + 'ms');
-    }
-    return {
-        totalNoOfHits: evaluation.length,
-        cases: cases
-    };
-};
-
-Retriever.prototype.evaluateOld = function(query, opt) {
-    var _this = this, options = opt || {}, evaluation = [], cases = [], data, threshold = options.threshold || 0, maxCases = options.maxCases || 10, similarity, divider;
-    this.cases.forEach(function(c, index) {
-        similarity = 0, divider = 0;
-        _this.attributes.forEach(function(attribute) {
-            if (attribute.weight > 0) {
-                similarity += attribute.weight * attribute.evaluate(query[attribute.name], c[attribute.name]);
-                divider += attribute.weight;
-            }
-        });
-        if (divider > 0) {
-            similarity = similarity / divider;
-        } else {
-            similarity = 0;
-        }
-        if (similarity >= threshold) {
-            evaluation.push({
-                similarity: similarity,
-                id: index
-            });
-        }
-    });
-    evaluation.sort(compareSimilarity);
-    for (var i = 0, n = evaluation.length > maxCases ? maxCases : evaluation.length; i < n; i++) {
-        data = clone(_this.cases[evaluation[i].id]);
-        data._similarity = evaluation[i].similarity;
-        cases.push(data);
     }
     return {
         totalNoOfHits: evaluation.length,

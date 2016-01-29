@@ -85,7 +85,6 @@ var modelDefinition = {
 var retriever = new cbr.Retriever();
 
 retriever.setModel(modelDefinition);
-retriever.setValuationModel(modelDefinition);
 
 function random(low, high) {
     return Math.floor(Math.random() * (high - low + 1) + low);
@@ -99,8 +98,6 @@ for (var i = 0; i < 1000000; i++) {
         Test4: random(1, 10)
     });
 }
-
-// Ich verliere 10ms nach der neuen Methode
 
 retriever.evaluate({
     Test: 6,
